@@ -130,6 +130,11 @@ public class Combiner_Menu extends javax.swing.JFrame {
                 formWindowOpened(evt);
             }
         });
+        addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                formKeyPressed(evt);
+            }
+        });
 
         jButton1.setText("Add file/s");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -654,6 +659,32 @@ public class Combiner_Menu extends javax.swing.JFrame {
         // TODO add your handling code here:
         smm.setIsOpenComb(false);
     }//GEN-LAST:event_formWindowClosing
+
+    private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
+        // TODO add your handling code here:
+               if (KeyEvent.VK_DELETE == evt.getKeyCode()) {
+
+            int[] arr = fileListTocCompress1.getSelectedIndices();
+            for (int i = 0; i < arr.length; i++) {
+                String tmp = files.get(arr[i]).getAbsolutePath();
+                if (tmp != null) {
+                    File tmpFile = new File(tmp);
+                    files.remove(tmpFile);
+                    if (curFilePath != null && curFilePath.getAbsolutePath().equals(tmp)) {
+                        curFilePath = null;
+                        currFile.setText("Current File: ");
+                        curr_file_prop.setText("");
+                    }
+                    try {
+                        refreshFileList();
+                    } catch (IOException ex) {
+                        Logger.getLogger(Combiner_Menu.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+        }
+        
+    }//GEN-LAST:event_formKeyPressed
 
     private String[] getNamesArray() {
         String[] arr = new String[files.size()];

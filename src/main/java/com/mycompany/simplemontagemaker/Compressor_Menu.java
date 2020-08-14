@@ -12,7 +12,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.*;
@@ -48,7 +47,7 @@ public class Compressor_Menu extends javax.swing.JFrame {
     public Compressor_Menu() {
         initComponents();
         initOther();
-
+        refreshProgList();
     }
 
     /**
@@ -118,6 +117,11 @@ public class Compressor_Menu extends javax.swing.JFrame {
             }
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
+            }
+        });
+        addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                formKeyPressed(evt);
             }
         });
 
@@ -600,8 +604,8 @@ public class Compressor_Menu extends javax.swing.JFrame {
     private String[] getResolutionArr() {
         String[] tmp = new String[15];
 
-        File text = new File("C:\\Users\\Omer\\Documents\\NetBeansProjects\\mavenproject2\\SimpleMontageMaker\\src\\main\\java\\com\\mycompany\\simplemontagemaker\\resu.txt");
-
+        File text = new File(Settings.dir+"\\resu.txt");
+        
         //Creating Scanner instnace to read File in Java
         Scanner scnr;
         try {
@@ -692,9 +696,11 @@ public class Compressor_Menu extends javax.swing.JFrame {
     }//GEN-LAST:event_audio_bit_rateBox4ActionPerformed
 
     private void refreshFileList() {
+                    System.out.println(nameOnly);
+
         fileListTocCompress1.setModel(new javax.swing.AbstractListModel<String>() {
             String[] names = nameOnly ? getNamesOnlyArr(getNamesArray()) : getNamesArray();
-
+        
             public int getSize() {
                 return names.length;
             }
@@ -794,7 +800,7 @@ public class Compressor_Menu extends javax.swing.JFrame {
             String out;
             int result = -1;
             do {
-                out = SaveAt();
+                out = SaveAt(new File(filePath).getName());
                 if (out == null) {
                     Object[] options1 = {"Choose again", "Cancel"};
                     String msg = "Error at choosing an output directoty\nWhat would you like to do?";
@@ -816,7 +822,7 @@ public class Compressor_Menu extends javax.swing.JFrame {
 
             if (toIgnore) {
                 //we dont want to compress this file becuase the chosse fauled at choosing dir!
-                
+
                 continue;
             }
             Compressor compMis = new Compressor(mute_box1.getState(), filePath, out, getUserProps());
@@ -875,7 +881,7 @@ public class Compressor_Menu extends javax.swing.JFrame {
 
         int result = -1;
         do {
-            out = SaveAt();
+            out = SaveAt(new File(p).getName());
             if (out == null) {
                 Object[] options1 = {"Choose again", "Cancel"};
                 String msg = "Error at choosing an output directoty\nWhat would you like to do?";
@@ -945,7 +951,7 @@ public class Compressor_Menu extends javax.swing.JFrame {
                         currFile.setText("Current File: ");
                         curr_file_prop.setText("");
                     }
-                    fileListTocCompress1Refresh();
+                    refreshFileList();
                 }
             }
         }
@@ -986,6 +992,12 @@ public class Compressor_Menu extends javax.swing.JFrame {
         nameOnly = show_file_name_CheckBox1.isSelected();
         refreshFileList();
     }//GEN-LAST:event_show_file_name_CheckBox1MouseClicked
+
+    private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
+        // TODO add your handling code here:
+
+        
+    }//GEN-LAST:event_formKeyPressed
 
     private String[] getNamesArray(LinkedList<File> list) {
         String[] arr = new String[list.size()];
@@ -1142,25 +1154,26 @@ public class Compressor_Menu extends javax.swing.JFrame {
         Settings.initSetting();
     }
 
-    private String SaveAt() {
+    private String SaveAt(String in) {
         String destName = null;
         JFileChooser chooser = new JFileChooser();
         if (curDir != null && !(curDir.equals(""))) {
             chooser.setCurrentDirectory(new File(curDir));
         }
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setDialogTitle("File :" + in);
         int option = chooser.showDialog(this, "Save At...");
         if (option == JFileChooser.APPROVE_OPTION) {
             destName = chooser.getSelectedFile().getAbsolutePath();
-        }else{
+        } else {
             return null;
-        
+
         }
-        if (destName== null || !new File(destName).exists() || !new File(destName).isDirectory()) {
+        if (destName == null || !new File(destName).exists() || !new File(destName).isDirectory()) {
             String message = "Error, Please choose a directory!";
             JOptionPane.showMessageDialog(new JFrame(), message, "Compression Error!",
                     JOptionPane.ERROR_MESSAGE);
-            return SaveAt();
+            return SaveAt(in);
         }
         return destName;
     }
@@ -1286,9 +1299,10 @@ public class Compressor_Menu extends javax.swing.JFrame {
     }
 
     static void refreshProgList() {
-        for (File file : Settings.deleteList) {
-            file.delete();
-        }
+            for (File file : Settings.deleteList) {
+                file.delete();
+            }
+        
 
         Prog_Jlist1.setModel(new javax.swing.AbstractListModel<String>() {
             String[] names = getProgList();

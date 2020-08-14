@@ -5,6 +5,7 @@
  */
 package com.mycompany.simplemontagemaker;
 
+import java.awt.event.MouseEvent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import net.bramp.ffmpeg.FFmpeg;
@@ -67,12 +68,22 @@ public class smm extends javax.swing.JFrame {
         combiner_jButton3 = new javax.swing.JButton();
         label1 = new java.awt.Label();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Simple Montage Maker");
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                formMousePressed(evt);
+            }
+        });
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
+            }
+        });
+        addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                formKeyPressed(evt);
             }
         });
 
@@ -182,15 +193,26 @@ public class smm extends javax.swing.JFrame {
                     JOptionPane.YES_NO_OPTION);
             if (ans == 0) {
                 Settings.exit();
+                System.exit(0);
 
             }
-
         } else {
             Settings.exit();
+            System.exit(0);
 
         }
 
+
     }//GEN-LAST:event_formWindowClosing
+
+    private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_formKeyPressed
+
+    private void formMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMousePressed
+        // TODO add your handling code here:
+
+    }//GEN-LAST:event_formMousePressed
 
     /**
      * @param args the command line arguments

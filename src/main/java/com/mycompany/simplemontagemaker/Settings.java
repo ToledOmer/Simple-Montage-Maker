@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -41,8 +42,9 @@ class Settings {
     static Map<Future<String>, String> progPathMap = new ConcurrentHashMap<>();
     static Map<String, String> InOutMap = new ConcurrentHashMap<>();
     static Map<String, ReentrantLock> InKeyMap = new ConcurrentHashMap<>();
-    static LinkedList<File> deleteList = new LinkedList<>();
+    static ConcurrentLinkedDeque<File> deleteList = new ConcurrentLinkedDeque<>();
 //    static LinkedList<File> FilesToDelete = new LinkedList<>();
+       static String dir = System.getProperty("user.dir");
 
     public static LinkedBlockingQueue getfList() {
         return fList;
@@ -87,9 +89,8 @@ class Settings {
     private static void initFF() {
         JFileChooser chooser = new JFileChooser();
 
-        String d = System.getProperty("user.dir");
         try {
-            File f = new File(d + "\\ffmpeg.exe");
+            File f = new File(dir + "\\ffmpeg.exe");
             if (f.exists()) {
                 ffmpeg = new FFmpeg(f.getAbsolutePath());
 
@@ -122,7 +123,7 @@ class Settings {
         }
         try {
 
-            File f = new File(d + "\\ffprobe.exe");
+            File f = new File(dir + "\\ffprobe.exe");
             if (f.exists()) {
                 ffprobe = new FFprobe(f.getAbsolutePath());
             } else {

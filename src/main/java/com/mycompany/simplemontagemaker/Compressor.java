@@ -33,7 +33,7 @@ public class Compressor implements Callable {
     private Prop p;
     private FFmpegBuilder builder;
 
-    public Compressor(boolean toMute, String in,String out, Prop p) {
+    public Compressor(boolean toMute, String in, String out, Prop p) {
         this.toMute = toMute;
         this.in = in;
         this.p = p;
@@ -59,9 +59,9 @@ public class Compressor implements Callable {
         LocalDateTime now = LocalDateTime.now();
 //        System.out.println("start at " + dtf.format(now));
         String name = file.getName().substring(0, file.getName().lastIndexOf("."));
-         out = out + "\\" + name + "(compressed)" + dtf.format(now) + "." + p.getFormat();
+        out = out + "\\" + name + "(compressed)" + dtf.format(now) + "." + p.getFormat();
         //if the file got
-
+        Settings.deleteList.add(new File(out));
         Settings.getInOutMap().put(in, out);
 
         builder = new FFmpegBuilder()
@@ -98,9 +98,10 @@ public class Compressor implements Callable {
         LocalDateTime now = LocalDateTime.now();
 //        System.out.println("start at " + dtf.format(now));
         String name = file.getName().substring(0, file.getName().lastIndexOf("."));
-        String out = file.getParent() + "\\" + name + "(compressed)" + dtf.format(now) + "." + p.getFormat();
+        out = out + "\\" + name + "(compressed)" + dtf.format(now) + "." + p.getFormat();
         //in wont be in the map untl now
         Settings.getInOutMap().put(in, out);
+        Settings.deleteList.add(new File(out));
 
         FFmpegProbeResult probeResult;
         try {
@@ -144,8 +145,9 @@ public class Compressor implements Callable {
         LocalDateTime now = LocalDateTime.now();
 //        System.out.println("start at " + dtf.format(now));
         String name = file.getName().substring(0, file.getName().indexOf("."));
-         out = out + "\\" + name + "(compressed)(muted)" + dtf.format(now) + "." + p.getFormat();
+        out = out + "\\" + name + "(compressed)(muted)" + dtf.format(now) + "." + p.getFormat();
         Settings.getInOutMap().put(in, out);
+        Settings.deleteList.add(new File(out));
 
         builder = new FFmpegBuilder()
                 .setInput(in) // Filename, or a FFmpegProbeResult
@@ -178,6 +180,8 @@ public class Compressor implements Callable {
                     for (Object d : Settings.getfList()) {
                         Future<String> future = (Future<String>) d;
                         if (future.isDone() && Settings.progMap.get(future).equals(in)) {
+                            Settings.deleteList.remove(new File(out));
+
                             String message = new String();
                             try {
                                 message = "file:\n" + future.get() + "\ncompressd successfully";
