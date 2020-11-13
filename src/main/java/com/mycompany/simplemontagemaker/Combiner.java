@@ -51,8 +51,7 @@ public class Combiner implements Callable<String> {
      *
      * @param list - list of all the absulouts paths of the files we want to
      * combine<br> </br>
-     * @param combo - absolutr path of the combines file(including format)<br>
-     * </br>
+     * @param combo - absolutr path of the combines file(including format)<br> </br>
      */
     public String combineList() throws InterruptedException, IOException {
         String fmpeg = Settings.getFfmpeg().getPath();
@@ -120,12 +119,7 @@ public class Combiner implements Callable<String> {
             file.delete();
         }
 
-        int j = 1;
-        String name = path + "\\" + "comboFinal" + ".mp4";
-        while (new File(name).exists()) {
-            name = path + "\\" + "comboFinal" + "(" + j + ")" + ".mp4";
-            j++;
-        }
+        String name = CreateOutNameWithFormat("ComboFinal","mp4" , path);
         if (pp != null) {
             pp.renameTo(new File(name));
             pp = new File(name);
@@ -136,6 +130,17 @@ public class Combiner implements Callable<String> {
         return null;
     }
 
+    private String CreateOutNameWithFormat(String fName , String format, String outPath) {
+        
+        int j = 1;
+        String name = outPath + "\\" + fName + "."+format;
+        while (new File(name).exists()) {
+            name = outPath + "\\" + fName + "(" + j + ")" +"."+format;
+            j++;
+        }
+        return name;
+    }
+
     @Override
     public String call() throws Exception {
         String tmp = combineList();
@@ -144,12 +149,9 @@ public class Combiner implements Callable<String> {
 
             tmp = toMute ? MuteAndAdd(tmp) : AddMusic(tmp);
         } else if (toMute) {
-
             tmp = onlyMute(tmp);
-
         }
         Settings.getExecutor().submit(() -> {
-//            synchronized (Settings.getfList()) {
             for (Object d : Settings.getfList()) {
                 Future<String> future = (Future<String>) d;
                 if (future.isDone()) {
@@ -166,9 +168,7 @@ public class Combiner implements Callable<String> {
                     Settings.getfList().remove(future);
                     Combiner_Menu.refreshProgList();
                 }
-//                }
             }
-
         });
 
         return tmp;
